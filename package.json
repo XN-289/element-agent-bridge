@@ -1,0 +1,124 @@
+{
+  "name": "element-agent-bridge",
+  "displayName": "Element Agent Bridge",
+  "description": "Send VS Code Integrated Browser element references to real Claude Code or Codex CLI terminals.",
+  "version": "0.1.1",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.136.0"
+  },
+  "categories": [
+    "Chat",
+    "Other"
+  ],
+  "activationEvents": [
+    "onChatParticipant:element-agent-bridge.element",
+    "onCommand:elementAgentBridge.sendToClaude",
+    "onCommand:elementAgentBridge.sendToCodex",
+    "onCommand:elementAgentBridge.inspectReferences",
+    "onCommand:elementAgentBridge.openLastContext"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "element-agent-bridge.element",
+        "name": "element",
+        "fullName": "Element Agent Bridge",
+        "description": "Send selected browser elements to Claude Code or Codex CLI.",
+        "isSticky": true
+      }
+    ],
+    "commands": [
+      {
+        "command": "elementAgentBridge.sendToClaude",
+        "title": "Element Agent Bridge: Send to Claude"
+      },
+      {
+        "command": "elementAgentBridge.sendToCodex",
+        "title": "Element Agent Bridge: Send to Codex"
+      },
+      {
+        "command": "elementAgentBridge.inspectReferences",
+        "title": "Element Agent Bridge: Inspect Captured References"
+      },
+      {
+        "command": "elementAgentBridge.openLastContext",
+        "title": "Element Agent Bridge: Open Last Context"
+      }
+    ],
+    "configuration": {
+      "title": "Element Agent Bridge",
+      "properties": {
+        "elementAgentBridge.claudeExecutable": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path or command name for the Claude Code CLI. Empty uses PATH and known Windows install locations."
+        },
+        "elementAgentBridge.codexExecutable": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path or command name for the Codex CLI. Empty uses PATH and known Windows install locations."
+        },
+        "elementAgentBridge.autoSubmit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Press Enter after placing a prompt into a confirmed agent terminal. Disabled by default."
+        },
+        "elementAgentBridge.preferredTerminal": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "terminal",
+            "clipboard"
+          ],
+          "enumDescriptions": [
+            "Send to a newly created agent terminal, but use the clipboard for an existing terminal whose state cannot be verified.",
+            "Place the prompt into the named agent terminal.",
+            "Focus the agent terminal and copy the prompt to the clipboard."
+          ],
+          "default": "auto",
+          "description": "How prompts are delivered to Claude Code and Codex terminals."
+        },
+        "elementAgentBridge.terminalStartupDelayMs": {
+          "type": "number",
+          "default": 1800,
+          "minimum": 0,
+          "maximum": 30000,
+          "description": "Delay before placing a prompt into a newly launched CLI terminal."
+        },
+        "elementAgentBridge.keepContextFiles": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep older captured context files. When disabled, only the latest capture is retained."
+        },
+        "elementAgentBridge.contextPreviewLength": {
+          "type": "number",
+          "default": 240,
+          "minimum": 80,
+          "maximum": 2000,
+          "description": "Maximum reference preview length shown in the chat response."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src",
+    "test:extension": "node scripts/run-extension-test.mjs",
+    "fixture": "node scripts/serve-fixture.mjs",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/node": "^24.3.1",
+    "@types/vscode": "^1.136.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "eslint": "^9.35.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
+  }
+}

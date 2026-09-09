@@ -1,0 +1,13 @@
+.vscode/**
+src/**
+test-fixture/**
+scripts/**
+eslint.config.mjs
+tsconfig.json
+.gitignore
+node_modules/**
+.vscode-test/**
+.playwright-mcp/**
+validation/**
+out/test/**
+**/*.map

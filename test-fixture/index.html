@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Element Agent Bridge Fixture</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Segoe UI", sans-serif;
+        background: #f4f5f7;
+        color: #202124;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+      }
+
+      main {
+        width: min(560px, calc(100vw - 40px));
+        padding: 28px;
+        border: 1px solid #d8dadd;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 8px 24px rgb(32 33 36 / 10%);
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 24px;
+      }
+
+      p {
+        margin: 0 0 20px;
+        color: #5f6368;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      #target-button {
+        min-height: 36px;
+        padding: 0 16px;
+        border: 1px solid #1769aa;
+        border-radius: 4px;
+        background: #1976d2;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .status {
+        min-height: 20px;
+        color: #137333;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Element Agent Bridge</h1>
+      <p>Use VS Code Integrated Browser's Add Element to Chat on the button below.</p>
+      <div class="actions">
+        <button id="target-button" type="button">Target button</button>
+        <span class="status" aria-live="polite"></span>
+      </div>
+    </main>
+    <script>
+      const button = document.querySelector('#target-button');
+      const status = document.querySelector('.status');
+      button.addEventListener('click', () => {
+        status.textContent = 'Button clicked';
+      });
+    </script>
+  </body>
+</html>
