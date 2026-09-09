@@ -1,10 +1,10 @@
 # PROJECT_STATE
 
-Updated: 2026-09-09 17:14 +08:00
-Current phase: release
+Updated: 2026-09-09 17:41 +08:00
+Current phase: handoff
 
 ## 一句话现状
-Element Agent Bridge 已完成 MVP 实现、对抗性 Extension Host 测试和 VSIX 打包，桌面副本已可作为独立 GitHub 项目使用。
+Element Agent Bridge 已完成 MVP 实现、对抗性 Extension Host 测试、VSIX 打包并推送到 GitHub，桌面副本与远程 `main` 已建立跟踪关系。
 
 ## 已接受事实
 - 项目名称为 `element-agent-bridge`，VS Code 扩展显示名为 Element Agent Bridge — `package.json`
@@ -29,15 +29,14 @@ Element Agent Bridge 已完成 MVP 实现、对抗性 Extension Host 测试和 V
 - Codex Playwright MCP — 可读取配置并完成导航、snapshot、evaluate 和截图验证
 - 桌面副本敏感信息扫描 — `Unique secret-like candidates: 0`
 - 完整本机边界扫描发现 318 组疑似候选，均位于 Claude/Codex 本地日志；未复制到交付目录 — 发布前安全扫描结果
+- GitHub 远程为 `git@github.com:XN-289/element-agent-bridge.git`，初始提交为 `782f4a4` — Git push 结果
 
 ## 未决问题
 - P1 — 尚未在生产 VS Code UI 中手动完成一次真实 Integrated Browser Add Element to Chat 流程 — 需要 Extension Development Host 或生产窗口人工点击验收
-- P1 — 尚未创建 GitHub 远程仓库或执行 push — 等待仓库地址和授权
 - P2 — 自动判断现有 Claude/Codex TUI 是否空闲受 VS Code Terminal API 限制 — 保留聚焦终端并复制到剪贴板的安全回退
 
 ## 下一步
-1. 用户提供 GitHub 仓库地址和授权 — 配置 remote 并 push
-2. 在生产 VS Code UI 手动验收真实 Add Element to Chat — 确认原生引用结构与交互
+1. 在生产 VS Code UI 手动验收真实 Add Element to Chat — 确认原生引用结构与交互
 
 ## 恢复上下文
 - 入口目录：`D:\muse 海外app\Ele`
@@ -48,3 +47,4 @@ Element Agent Bridge 已完成 MVP 实现、对抗性 Extension Host 测试和 V
 ## 最近更新
 - 2026-09-09 — 完成对抗性测试并重新打包 VSIX — 发布前整理
 - 2026-09-09 — 创建桌面 GitHub-ready 副本并完成独立安装、编译、Lint、Extension Host 测试和敏感信息扫描 — 可发布
+- 2026-09-09 — 推送初始提交到 GitHub `main` — 远程交付完成
