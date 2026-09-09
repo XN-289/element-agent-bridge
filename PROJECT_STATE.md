@@ -1,10 +1,10 @@
 # PROJECT_STATE
 
-Updated: 2026-09-09 18:54 +08:00
+Updated: 2026-09-09 18:58 +08:00
 Current phase: handoff
 
 ## 一句话现状
-Element Agent Bridge 已完成绕过 VS Code 原生 Chat 的直接浏览器选取 MVP；0.2.0 改动已在桌面交付副本中，待本轮提交并推送到 GitHub。
+Element Agent Bridge 已完成绕过 VS Code 原生 Chat 的直接浏览器选取 MVP；0.2.0 改动已提交并推送到 GitHub `main`。
 
 ## 已接受事实
 - 项目名称为 `element-agent-bridge`，VS Code 扩展显示名为 Element Agent Bridge — `package.json`
@@ -12,6 +12,7 @@ Element Agent Bridge 已完成绕过 VS Code 原生 Chat 的直接浏览器选�
 - Claude Code 与 Codex 通过 VS Code Terminal API 接收真实 CLI Prompt，不修改官方扩展或内部代码 — `src/agentTerminal.ts`, `README.md`
 - Playwright MCP 已分别配置到 Claude Code 与 Codex，现有 Browser Plugin 配置保持不变 — 本机 CLI 配置检查结果
 - 直接模式通过独立 Edge/Chrome 窗口选择元素，不依赖 VS Code Integrated Browser 或原生 Chat — `src/directBrowser.ts`, `src/extension.ts`
+- 0.2.0 直接模式提交为 `f190afb`，已推送到远程 `main` — `git log`, `git push`
 
 ## 已实现
 - Chat Participant `@element` — `src/extension.ts`
@@ -35,13 +36,11 @@ Element Agent Bridge 已完成绕过 VS Code 原生 Chat 的直接浏览器选�
 
 ## 未决问题
 - P1 — 尚未在生产 VS Code UI 中手动完成一次真实 Integrated Browser Add Element to Chat 流程 — 需要 Extension Development Host 或生产窗口人工点击验收
-- P1 — 本轮 0.2.0 直接模式改动尚未提交并推送到远程 `main` — 当前桌面仓库 Git 状态
 - P2 — 自动判断现有 Claude/Codex TUI 是否空闲受 VS Code Terminal API 限制 — 保留聚焦终端并复制到剪贴板的安全回退
 
 ## 下一步
-1. 运行最终 compile/lint/Extension Host/package 验证 — 所有命令通过且 VSIX 包含 `playwright-core`
-2. 提交并推送 0.2.0 到远程 `main` — `git status` 干净且远程包含新 commit
-3. 在生产 VS Code UI 手动验收真实 Add Element to Chat 或直接模式 — 确认实际点击交互
+1. 在生产 VS Code UI 手动验收直接模式 — 确认实际点击交互和 CLI 终端交接
+2. 如需保留原生兼容模式，再手动验收 Integrated Browser Add Element to Chat — 确认实际引用结构
 
 ## 恢复上下文
 - 入口目录：`C:\Users\linma\Desktop\element-agent-bridge`
@@ -52,5 +51,6 @@ Element Agent Bridge 已完成绕过 VS Code 原生 Chat 的直接浏览器选�
 ## 最近更新
 - 2026-09-09 — 增加直接浏览器选取模式，保留原生 Chat 兼容模式 — 0.2.0
 - 2026-09-09 — 完成对抗性测试并重新打包 VSIX — 发布前整理
+- 2026-09-09 — 提交 `f190afb` 并推送到 GitHub `main` — 远程交付完成
 - 2026-09-09 — 创建桌面 GitHub-ready 副本并完成独立安装、编译、Lint、Extension Host 测试和敏感信息扫描 — 可发布
 - 2026-09-09 — 推送初始提交到 GitHub `main` — 远程交付完成
