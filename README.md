@@ -1,8 +1,8 @@
 # Element Agent Bridge
 
-Element Agent Bridge keeps VS Code Integrated Browser's native **Add Element to Chat**
-selection flow and forwards the resulting chat references to a real Claude Code CLI or
-Codex CLI terminal.
+Element Agent Bridge provides a direct browser element workflow for real Claude Code CLI
+and Codex CLI terminals. The original VS Code Integrated Browser **Add Element to Chat**
+workflow remains available as a compatibility mode.
 
 ## Requirements
 
@@ -11,6 +11,26 @@ Codex CLI terminal.
 - Playwright MCP configured for the CLI that will verify the page
 
 ## Use
+
+### Direct mode
+
+1. Open the Command Palette and run **Element Agent Bridge: Pick Element Directly**.
+2. Enter the page URL. The extension opens a temporary Edge or Chrome window.
+3. Hover to see the target outline, then click the element. Press Esc to cancel.
+4. Enter the requested change.
+5. Choose **Claude Code** or **Codex**.
+6. Confirm the prompt in the focused CLI terminal and press Enter. Automatic submission is
+   disabled by default.
+
+The direct picker captures the page URL, title, CSS selector, outer HTML, text, attributes,
+relevant CSS rules, computed layout properties, bounding box, and an element screenshot.
+The temporary browser is closed after capture. The agent's configured Playwright MCP is
+used later for refresh and verification.
+
+The direct picker uses a fresh browser profile. It is intended for local development pages
+and pages that do not require an existing browser login session.
+
+### VS Code Chat compatibility mode
 
 1. Open the target page in VS Code Integrated Browser.
 2. Choose **Add Element to Chat** and select one or more elements.
@@ -34,11 +54,13 @@ into the same capture directory when VS Code permits reading the temporary resou
 - `Element Agent Bridge: Send to Codex`
 - `Element Agent Bridge: Inspect Captured References`
 - `Element Agent Bridge: Open Last Context`
+- `Element Agent Bridge: Pick Element Directly`
 
 ## Settings
 
 - `elementAgentBridge.claudeExecutable`
 - `elementAgentBridge.codexExecutable`
+- `elementAgentBridge.browserExecutable`
 - `elementAgentBridge.autoSubmit`
 - `elementAgentBridge.preferredTerminal`
 - `elementAgentBridge.terminalStartupDelayMs`

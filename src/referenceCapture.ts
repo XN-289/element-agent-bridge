@@ -1,7 +1,9 @@
 import * as os from 'node:os';
 import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import * as vscode from 'vscode';
+import type { DirectElementCapture } from './directBrowser';
 
 const LAST_CAPTURE_KEY = 'elementAgentBridge.lastCapture';
 const MAX_DEPTH = 10;
@@ -43,6 +45,53 @@ export async function captureChatRequest(
   extensionContext: vscode.ExtensionContext,
   request: vscode.ChatRequest
 ): Promise<CaptureRecord> {
+  return captureReferences(extensionContext, request.prompt, request.references);
+}
+
+export async function captureDirectElement(
+  extensionContext: vscode.ExtensionContext,
+  prompt: string,
+  element: DirectElementCapture
+): Promise<CaptureRecord> {
+  const temporaryScreenshot = path.join(
+    os.tmpdir(),
+    `element-agent-bridge-${randomUUID()}.png`
+  );
+  await fs.writeFile(temporaryScreenshot, element.screenshot);
+  try {
+    return captureReferences(extensionContext, prompt, [
+      {
+        id: 'direct-browser-element',
+        modelDescription: 'Element selected with Element Agent Bridge direct browser picker',
+        value: {
+          pageUrl: element.pageUrl,
+          pageTitle: element.pageTitle,
+          selector: element.selector,
+          outerHTML: element.outerHTML,
+          textContent: element.textContent,
+          attributes: element.attributes,
+          computedStyles: element.computedStyles,
+          relevantCss: element.relevantCss,
+          boundingBox: element.boundingBox,
+          screenshot: vscode.Uri.file(temporaryScreenshot)
+        }
+      }
+    ]);
+  } finally {
+    await fs.rm(temporaryScreenshot, { force: true });
+  }
+}
+
+async function captureReferences(
+  extensionContext: vscode.ExtensionContext,
+  prompt: string,
+  inputReferences: readonly {
+    id?: string;
+    modelDescription?: string;
+    value: unknown;
+    range?: unknown;
+  }[]
+): Promise<CaptureRecord> {
   const storageRoot = await resolveStorageRoot(extensionContext);
   const config = vscode.workspace.getConfiguration('elementAgentBridge');
   const keepContextFiles = config.get<boolean>('keepContextFiles', false);
@@ -65,8 +114,8 @@ export async function captureChatRequest(
   };
 
   const references = [];
-  for (let index = 0; index < request.references.length; index += 1) {
-    const reference = request.references[index];
+  for (let index = 0; index < inputReferences.length; index += 1) {
+    const reference = inputReferences[index];
     const raw = reference as unknown as Record<string, unknown>;
     references.push({
       index: index + 1,
@@ -95,7 +144,7 @@ export async function captureChatRequest(
   const record: CaptureRecord = {
     captureId,
     createdAt: new Date().toISOString(),
-    prompt: request.prompt,
+    prompt,
     workspaceFolders,
     contextFile: contextFile.toString(true),
     referencesFile: referencesFile.toString(true),

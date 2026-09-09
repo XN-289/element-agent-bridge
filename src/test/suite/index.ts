@@ -7,13 +7,15 @@ import {
   agentTerminalEnvironmentForTests,
   resolveAgentExecutableForTests
 } from '../../agentTerminal';
+import { resolveBrowserExecutableForTests } from '../../directBrowser';
 import type { ElementAgentBridgeTestApi } from '../../extension';
 
 const expectedCommands = [
   'elementAgentBridge.sendToClaude',
   'elementAgentBridge.sendToCodex',
   'elementAgentBridge.inspectReferences',
-  'elementAgentBridge.openLastContext'
+  'elementAgentBridge.openLastContext',
+  'elementAgentBridge.pickElementDirectly'
 ];
 
 export async function run(): Promise<void> {
@@ -34,6 +36,9 @@ export async function run(): Promise<void> {
   assert.ok(codexExecutable, 'Codex executable was not resolved');
   await fs.access(claudeExecutable);
   await fs.access(codexExecutable);
+  const browserExecutable = await resolveBrowserExecutableForTests();
+  assert.ok(browserExecutable, 'Edge or Chrome executable was not resolved');
+  await fs.access(browserExecutable);
 
   const codexEnvironment = agentTerminalEnvironmentForTests('codex');
   assert.equal(

@@ -1,7 +1,12 @@
 import * as vscode from 'vscode';
 import { sendContextToAgent } from './agentTerminal';
 import {
+  pickElementFromBrowser,
+  resolveBrowserExecutable
+} from './directBrowser';
+import {
   captureChatRequest,
+  captureDirectElement,
   captureUri,
   loadCapture,
   type CaptureRecord
@@ -54,6 +59,9 @@ export function activate(context: vscode.ExtensionContext): ElementAgentBridgeTe
           preview: false
         });
       }
+    }),
+    vscode.commands.registerCommand('elementAgentBridge.pickElementDirectly', async () => {
+      await pickAndSendDirectly(context);
     })
   );
 
@@ -100,10 +108,96 @@ async function requireLastCapture(
   const capture = await loadCapture(context);
   if (!capture) {
     void vscode.window.showWarningMessage(
-      '还没有可用的元素上下文。请先通过 @element 发送包含页面元素引用的消息。'
+      '还没有可用的元素上下文。请先使用“直接选择元素”命令，或通过 @element 发送包含页面元素引用的消息。'
     );
   }
   return capture;
+}
+
+async function pickAndSendDirectly(
+  context: vscode.ExtensionContext
+): Promise<void> {
+  const config = vscode.workspace.getConfiguration('elementAgentBridge');
+  const previousUrl = context.globalState.get<string>('elementAgentBridge.lastDirectUrl', '');
+  const url = await vscode.window.showInputBox({
+    title: 'Element Agent Bridge: 选择页面元素',
+    prompt: '输入要打开的页面 URL，然后在浏览器里点击目标元素',
+    value: previousUrl || 'http://127.0.0.1:4176/',
+    validateInput: (value) => {
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+          ? undefined
+          : '只支持 http:// 或 https:// 页面';
+      } catch {
+        return '请输入完整 URL，例如 http://localhost:3000/';
+      }
+    }
+  });
+  if (!url) {
+    return;
+  }
+  await context.globalState.update('elementAgentBridge.lastDirectUrl', url);
+
+  const browserExecutable = await resolveBrowserExecutable(
+    config.get<string>('browserExecutable', '')
+  );
+  if (!browserExecutable) {
+    void vscode.window.showErrorMessage(
+      '找不到 Edge 或 Chrome。请在设置 elementAgentBridge.browserExecutable 中填写浏览器可执行文件路径。'
+    );
+    return;
+  }
+
+  let element;
+  try {
+    void vscode.window.showInformationMessage(
+      `已打开 ${browserExecutable}。请在浏览器中点击目标元素，按 Esc 取消。`
+    );
+    element = await pickElementFromBrowser(url, browserExecutable);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    void vscode.window.showErrorMessage(`直接选择元素失败：${message}`);
+    return;
+  }
+  if (!element) {
+    void vscode.window.showInformationMessage('已取消元素选择。');
+    return;
+  }
+
+  const prompt = await vscode.window.showInputBox({
+    title: 'Element Agent Bridge: 修改要求',
+    prompt: '描述你希望 Claude Code 或 Codex 修改什么',
+    placeHolder: '例如：把这个按钮向下移动 8px，不要影响父容器',
+    ignoreFocusOut: true,
+    validateInput: (value) => value.trim() ? undefined : '请输入修改要求'
+  });
+  if (!prompt) {
+    return;
+  }
+
+  const capture = await captureDirectElement(context, prompt, element);
+  const target = await vscode.window.showQuickPick(
+    [
+      { label: 'Claude Code', description: '发送到真实 Claude Code CLI' },
+      { label: 'Codex', description: '发送到真实 Codex CLI' }
+    ],
+    {
+      title: '选择要接收任务的 Agent',
+      placeHolder: '选择后会生成上下文，并聚焦对应终端'
+    }
+  );
+  if (!target) {
+    return;
+  }
+
+  void vscode.window.showInformationMessage(
+    `已捕获元素上下文：${captureUri(capture.contextFile).fsPath}`
+  );
+  await sendContextToAgent(
+    target.label === 'Claude Code' ? 'claude' : 'codex',
+    captureUri(capture.contextFile)
+  );
 }
 
 function presence(value: boolean): string {

@@ -6,6 +6,7 @@ eslint.config.mjs
 tsconfig.json
 .gitignore
 node_modules/**
+!node_modules/playwright-core/**
 .vscode-test/**
 .playwright-mcp/**
 validation/**

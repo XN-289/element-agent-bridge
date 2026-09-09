@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Add direct browser element picking that bypasses VS Code Chat.
+- Add automatic Edge/Chrome detection and Playwright-backed capture.
+- Keep the original `@element` Chat Participant workflow for compatibility.
+
 ## 0.1.1
 
 - Resolve Claude Code and Codex executables from native Windows installs when PATH shims are unavailable.
